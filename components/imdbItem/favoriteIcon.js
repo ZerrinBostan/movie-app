@@ -1,10 +1,8 @@
 import React, { Component } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-regular-svg-icons';
-import {observer, inject} from 'mobx-react';
-let imdbIds = [];
-@inject('ImdbStore')
-@observer
+
+let favorites = [];
 export class FavoriteIcon extends Component {
     constructor(props) {
         super(props);
@@ -15,48 +13,44 @@ export class FavoriteIcon extends Component {
     }
     componentWillMount() {
         if(localStorage.getItem('favoriteMovies') != null) {
-            if (!localStorage.getItem('favoriteMovies').includes(this.props.imdbID)) {
-                console.log('AS');
+            let favoritesString = localStorage.getItem('favoriteMovies');
+            if(favoritesString.includes(this.props.favoriteItemObj.imdbID)) {
                 this.setState({
-                    isSaved: false
+                    isSaved:true
                 });
             } else {
                 this.setState({
-                    isSaved: true
-                });
-            }   
+                    isSaved:false
+                })
+            }
         }
 
     }
     handleClick(e) {
         e.preventDefault();
         if (localStorage.getItem('favoriteMovies') == null) {
-            imdbIds.push(this.props.imdbID);
-            localStorage.setItem('favoriteMovies', imdbIds);
+            favorites.push(this.props.favoriteItemObj);
+            localStorage.setItem('favoriteMovies', JSON.stringify(favorites));
             this.setState({
                 isSaved: true
             });
-        
-        }else if (!localStorage.getItem('favoriteMovies').includes(this.props.imdbID)) {
-            let storageIds = localStorage.getItem('favoriteMovies');
-            imdbIds = storageIds.split(',');
-            if(imdbIds[0] == "") imdbIds.splice(0,1);
-            imdbIds.push(this.props.imdbID);
-            localStorage.setItem('favoriteMovies', imdbIds);
+        } else if(!localStorage.getItem('favoriteMovies').includes(this.props.favoriteItemObj.imdbID)){
+            let favoritesArray = JSON.parse(localStorage.getItem('favoriteMovies'));
+            favorites = favoritesArray;
+            favorites.push(this.props.favoriteItemObj);
+            localStorage.setItem('favoriteMovies', JSON.stringify(favorites));
             this.setState({
                 isSaved: true
             });
-        }
-         else {
-            let storageIds = localStorage.getItem('favoriteMovies');
-            imdbIds = storageIds.split(',');
-            imdbIds.forEach((element, index) => {
-                if (element == this.props.imdbID) {
-                    imdbIds.splice(index, 1);
+        } else {
+            let favoritesArray = JSON.parse(localStorage.getItem('favoriteMovies'));
+            favorites = favoritesArray;
+            favorites.forEach((favoriteItem,index) => {
+                if(favoriteItem.imdbID === this.props.favoriteItemObj.imdbID) {
+                    favorites.splice(index,1);
                 }
             });
-            localStorage.setItem('favoriteMovies', imdbIds);
-            this.props.ImdbStore.changeFavorites(imdbIds);
+            localStorage.setItem('favoriteMovies', JSON.stringify(favorites));
             this.setState({
                 isSaved: false
             });
