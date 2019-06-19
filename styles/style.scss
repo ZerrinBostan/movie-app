@@ -1,0 +1,12 @@
+@import '~bootstrap/scss/bootstrap.scss';
+$color-red:red;
+.favorite {
+    color:$color-red;
+}
+.card-img-top {
+    width: 300px;
+    height: 425px;
+}
+.card {
+    width: 300px;
+}
